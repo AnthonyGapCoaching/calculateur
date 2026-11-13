@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Calculateur de calories et macros – GAP coaching</title>
+<style>
+:root{--bg:#F1F5FA;--card:#fff;--ink:#171C25;--mute:#55627a;--line:#d3dcea;--acc:#2864E8;--accbg:#e1eafc;--bad:#b4421f;--badbg:#fbe4da;--blue:#2864E8;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14243B;--card:#1b2f4b;--ink:#F1F5FA;--mute:#9db0cc;--line:#2c4466;--acc:#7ea4f5;--accbg:#1f3f73;--bad:#ff9d78;--badbg:#40241a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#14243B;--card:#1b2f4b;--ink:#F1F5FA;--mute:#9db0cc;--line:#2c4466;--acc:#7ea4f5;--accbg:#1f3f73;--bad:#ff9d78;--badbg:#40241a;color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;border-top:6px solid #2864E8;background:var(--bg);color:var(--ink);font:16px/1.55 "Barlow","Segoe UI",system-ui,sans-serif}
+main{max-width:720px;margin:0 auto;padding:24px 16px 48px}
+h1{font:800 clamp(28px,7vw,40px)/1.05 "Barlow Condensed","Arial Narrow",sans-serif;margin:0 0 14px}
+h2{font:700 22px/1.2 "Barlow Condensed","Arial Narrow",sans-serif;margin:0 0 6px}
+.nav{display:flex;gap:8px;overflow-x:auto;margin-bottom:16px;padding-bottom:4px}
+.nav button{white-space:nowrap;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:8px 14px;font:inherit;cursor:pointer}
+.nav button[aria-current=true]{background:var(--ink);color:var(--bg);font-weight:700}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px;margin-bottom:14px}
+.mute{color:var(--mute);font-size:14px}
+label{display:block;font-weight:600;margin:10px 0 4px}
+input,select{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px}
+.btn{width:100%;margin-top:14px;background:var(--ink);color:var(--bg);border:0;border-radius:10px;padding:14px;font:800 17px inherit;cursor:pointer}
+.opt{display:block;width:100%;text-align:left;margin-top:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:8px;padding:12px;font:inherit;cursor:pointer}
+.opt.ok{background:var(--accbg);border-color:var(--acc)}.opt.ko{background:var(--badbg);border-color:var(--bad)}
+.big{font:800 34px/1.1 "Barlow Condensed","Arial Narrow",sans-serif}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:12px}
+.stat{background:var(--bg);border-radius:8px;padding:10px}.stat b{display:block;font-size:22px}
+.msg{background:var(--accbg);border-left:5px solid var(--acc);border-radius:8px;padding:12px 14px;margin:12px 0}
+.warn{background:var(--badbg);border-left:5px solid var(--bad);border-radius:8px;padding:12px 14px;margin:10px 0}
+.ck{display:flex;gap:10px;align-items:flex-start;font-weight:400;margin:8px 0}.ck input{width:auto;margin-top:5px}
+.ig{display:block;text-align:center;text-decoration:none;background:var(--blue);color:#fff;font-weight:800;border-radius:10px;padding:15px;margin-top:12px}
+.bar{height:6px;background:var(--line);border-radius:4px;margin-bottom:12px}.bar i{display:block;height:100%;background:var(--acc);border-radius:4px}
+.sec{background:transparent;border:1px solid var(--line);color:var(--ink);border-radius:10px;padding:12px;width:100%;margin-top:10px;font:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+@media print{.nav,.ig,.btn,.sec{display:none!important}body{background:#fff;color:#000}}
+</style>
+</head>
+<body>
+<main>
+<h1>Calculateur de calories et macros</h1>
+<div id="app"></div>
+</main>
+<script>
+
+var IG = "https://ig.me/m/anthony.gapcoaching";
+var app = document.getElementById("app");
+function $(i){return document.getElementById(i);}
+function cta(){
+ return '<div class="card mute" style="margin-top:14px">Ces outils donnent des repères généraux et ne remplacent pas une analyse et une programmation approfondies. Pour des conseils vraiment adaptés à toi, consulte un coach professionnel.<a class="ig" target="_blank" rel="noopener noreferrer" href="'+IG+'">En parler avec Anthony – GAP coaching</a></div>';
+}
+
+
+/* 1. Macros */
+function macros(){
+ app.innerHTML='<section class="card"><p class="mute">Estimation de tes besoins quotidiens selon ton objectif.</p>'+
+ '<label for="sx">Sexe</label><select id="sx"><option value="h">Homme</option><option value="f">Femme</option></select>'+
+ '<label for="ag">Âge</label><input id="ag" type="number" inputmode="numeric" min="14" max="90">'+
+ '<label for="pd">Poids (kg)</label><input id="pd" type="number" inputmode="decimal" min="30" max="250">'+
+ '<label for="tl">Taille (cm)</label><input id="tl" type="number" inputmode="numeric" min="120" max="230">'+
+ '<label for="jr">Ton activité au quotidien, hors sport (travail, vie perso)</label><select id="jr"><option value="1.2">Plutôt assis (bureau, télétravail)</option><option value="1.3" selected>Mixte (debout, déplacements)</option><option value="1.4">Active (debout toute la journée, travail physique)</option></select><label for="se">Séances de sport par semaine</label><select id="se"><option value="0">0</option><option value="0.04">1 à 2</option><option value="0.09" selected>3 à 4</option><option value="0.13">5 à 6</option><option value="0.16">7 ou plus</option></select><label for="pa">Nombre de pas par jour</label><select id="pa"><option value="0">Moins de 5 000</option><option value="0.04" selected>5 000 à 8 000</option><option value="0.08">8 000 à 12 000</option><option value="0.12">Plus de 12 000</option></select>'+
+ '<label for="ob">Objectif</label><select id="ob"><option value="1.1">Prise de masse</option><option value="1" selected>Maintien</option><option value="0.85">Sèche</option></select>'+
+ '<button class="btn" id="go">Calculer</button><p class="warn" id="er" style="display:none"></p></section><div id="out"></div>';
+ $("go").onclick=function(){
+  var a=+$("ag").value,w=+$("pd").value,h=+$("tl").value,er=$("er");
+  if(!(a>=14&&w>=30&&h>=120)){er.style.display="block";er.textContent="Renseigne ton âge, ton poids et ta taille.";return;}
+  er.style.display="none";
+  var bmr=10*w+6.25*h-5*a+($("sx").value==="h"?5:-161);
+  var pal=+$("jr").value+(+$("se").value)+(+$("pa").value);
+  var kcal=Math.round(bmr*pal*$("ob").value/10)*10;
+  var p=Math.round(2*w),f=Math.round(0.9*w),c=Math.max(0,Math.round((kcal-4*p-9*f)/4));
+  $("out").innerHTML='<section class="card"><div class="mute">Tes besoins estimés</div><div class="big">'+kcal+' kcal par jour</div>'+
+  '<div class="grid"><div class="stat">Protéines<b>'+p+' g</b></div><div class="stat">Glucides<b>'+c+' g</b></div><div class="stat">Lipides<b>'+f+' g</b></div><div class="stat">Base (métabolisme)<b>'+Math.round(bmr)+' kcal</b></div></div>'+
+  '<div class="msg">Bien joué, connaître ses chiffres est la base pour progresser. Suis ton poids sur 2 à 3 semaines et ajuste de 100 à 200 kcal si rien ne bouge.</div></section>'+cta();
+  $("out").scrollIntoView({behavior:"smooth"});
+ };
+}
+
+
+macros();
+</script>
+</body>
+</html>
